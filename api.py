@@ -1,7 +1,8 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 import re
 import os
 from init import *
+import json
 
 app = Flask(__name__)
 
@@ -42,17 +43,46 @@ def cebas():
         # CNPJ inválido
         return jsonify({'erro': 'CNPJ inválido.'}), 400
     
-    
     # filtrar pelo cnpj no DataFrame, passar o cnpj que vem na requisição para esse que está fixo
-    dados_filtrados = dados_excel.query("CNPJ == '62.388.566/0001-90'")
-    
+    # dados_filtrados = dadosCsv.query("CNPJ == '62.388.566/0001-90'")
+
+    # dados_filtrados = dadosCsv.loc[indices_linha].query("`CNPJ` == @cnpj_alvo")
+
+    # dados_filtrados = dadosCsv.query("CNPJ == '24.862.252/0001-98'")
 
 
     # if dados_filtrados.empty:
     #     return jsonify({'erro': 'CNPJ não encontrado.'}), 404
     
-    dados_json = dados_filtrados.to_json()
+    # dados_excel.to_csv(index=True, encoding='utf-8')
 
-    return dados_json
+    colunas = [
+    'PROTOCOLO', 'ENTIDADE', 'CNPJ', 'MUNICIPIO', 'UF', 'DT_PROTOCOLO',
+    'ORGAO_ORIGEM', 'DT_RECEBIMENTO_MDS', 'MOTIVO_RECEBIMENTO', 'TIPO_PROCESSO',
+    'DT_CERTIFICACAO_ANTERIOR_INICIO', 'DT_CERTIFICACAO_ANTERIOR_FIM',
+    'DT_PUBLICACAO_CERTIFICACAO_ANTERIOR_DOU', 'ORGAO_CERTIFICACAO_ANTERIOR',
+    'ORGAO_ENCAMINHAMENTO', 'OFICIO_ENCAMINHAMENTO', 'DT_ENCAMINHAMENTO',
+    'MOTIVO_ENCAMINHAMENTO', 'DT_RETORNO_MDS', 'OFICIO_RETORNO', 'PORTARIAS_SNAS',
+    'DT_DECISAO_SNAS', 'DT_PUBICACAO_PORTARIA_SNAS_DOU', 'ITEM_PORTARIA_DECISAO_SNAS',
+    'PROTOCOLO_RECURSO_SNAS', 'DT_PROTOCOLO_RECURSO_SNAS', 'PORTARIA_DECISAO_RECURSO_SNAS',
+    'DT_PORTARIA_RECONSIDERACAO_SNAS', 'DT_PUBLICACAO_DOU_RECONSIDERACAO_SNAS',
+    'PORTARIA_DECISAO_RECURSO_GM', 'DT_PORTARIA_DECISAO_RECURSO_GM',
+    'DT_PUBLICACAO_DOU_PORTARIA_DECISAO_RECURSO_GM', 'FASE_PROCESSO',
+    'DT_INICIO_CERTIFICACAO_ATUAL', 'DT_FIM_CERTIFICACAO_ATUAL'
+    ]
+
+    # dados_excel.to_csv(index=True, encoding='utf-8', header=True, sep="\t", columns=colunas, index_col=0)
+
+    dados = dados_excel.to_csv(index=True, encoding='utf-8', header=True, columns=colunas)
+
+    response = Response(
+        response=json.dumps(dados),
+        status=200,
+        mimetype='application/json'
+    )
+
+    # jsonify(dados, mimetype='application/json')
+
+    return response
 
 app.run(host='0.0.0.0', debug=True)

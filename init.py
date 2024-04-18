@@ -94,20 +94,34 @@ if resposta_pagina.status_code == 200:
         download_arquivo(link_arquivo, arquivo_destino)
         if os.path.exists(arquivo_destino):
             # Lê o arquivo Excel (opcional)
-            dados_excel = pd.read_excel(arquivo_destino, skiprows=4)
-            
-            #formantando para csv
-            # dados_excel.to_csv('dados.csv', index=True)
-            
-            # filtrar pelo cpf no excel
-            dados_cnpj = dados_excel.query("CNPJ == '24.862.252/0001-98'")
-            print(dados_cnpj)
-            
-            # Converta o DataFrame para JSON
-            # dados_json = dados_excel.to_json(orient='records', indent=4)
 
-            # cnpjs_para_consultar = ['62.388.566/0001-90', '03.380.445/0001-32', '30.412.616/0001-30']
-            # dados_cnpjs = dados_excel[dados_excel['CNPJ'].isin(cnpjs_para_consultar)]
+            # dados_excel.to_excel('newtabela', index=False, header=True)
+
+            colunas = [
+            'PROTOCOLO', 'ENTIDADE', 'CNPJ', 'MUNICIPIO', 'UF', 'DT_PROTOCOLO',
+            'ORGAO_ORIGEM', 'DT_RECEBIMENTO_MDS', 'MOTIVO_RECEBIMENTO', 'TIPO_PROCESSO',
+            'DT_CERTIFICACAO_ANTERIOR_INICIO', 'DT_CERTIFICACAO_ANTERIOR_FIM',
+            'DT_PUBLICACAO_CERTIFICACAO_ANTERIOR_DOU', 'ORGAO_CERTIFICACAO_ANTERIOR',
+            'ORGAO_ENCAMINHAMENTO', 'OFICIO_ENCAMINHAMENTO', 'DT_ENCAMINHAMENTO',
+            'MOTIVO_ENCAMINHAMENTO', 'DT_RETORNO_MDS', 'OFICIO_RETORNO', 'PORTARIAS_SNAS',
+            'DT_DECISAO_SNAS', 'DT_PUBICACAO_PORTARIA_SNAS_DOU', 'ITEM_PORTARIA_DECISAO_SNAS',
+            'PROTOCOLO_RECURSO_SNAS', 'DT_PROTOCOLO_RECURSO_SNAS', 'PORTARIA_DECISAO_RECURSO_SNAS',
+            'DT_PORTARIA_RECONSIDERACAO_SNAS', 'DT_PUBLICACAO_DOU_RECONSIDERACAO_SNAS',
+            'PORTARIA_DECISAO_RECURSO_GM', 'DT_PORTARIA_DECISAO_RECURSO_GM',
+            'DT_PUBLICACAO_DOU_PORTARIA_DECISAO_RECURSO_GM', 'FASE_PROCESSO',
+            'DT_INICIO_CERTIFICACAO_ATUAL', 'DT_FIM_CERTIFICACAO_ATUAL'
+            ]
+
+            dados_excel = pd.read_excel(arquivo_destino, skiprows=4, usecols=colunas)
+            # dados_excel.to_csv('tabela_formatada.csv', index=False)
+
+            #print(dados_excel.head())
+
+            # dados_excel.to_csv('dados.csv', index=True, encoding='utf-8')
+
+            # filtrar pelo cpf no excel
+            # dados_cnpj = dados_excel.query("CNPJ == '24.862.252/0001-98'")
+            print(dados_excel)
         else:
             print('Falha ao salvar o arquivo.')
     else:
