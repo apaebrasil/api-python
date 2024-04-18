@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
-from init import ler_arquivo_excel, consultar_dados_cnpj
 import re
 import os
+from init import *
 
 app = Flask(__name__)
 
@@ -35,22 +35,24 @@ def api():
 def cebas():
     cnpj_desformatado = request.args.get('cnpj')
     cnpj_formatado = mascarar_cnpj(cnpj_desformatado)
+    # dados_cnpj = dados.query("CNPJ == 'cnpj_formatado'")
 
 
     if not cnpj_formatado:
         # CNPJ inválido
         return jsonify({'erro': 'CNPJ inválido.'}), 400
     
-    diretorio_destino = './excel/'
-    nome_arquivo = 'PROCESSOSCEBAS15.04.2024Site.xls'
-
-    # Consulta os dados pelo CNPJ
-    # dados_cnpj = consultar_dados_cnpj(dados_excel, cnpj_formatado, diretorio_destino, nome_arquivo)
     
-    # if cnpj_formatado:
-    #     return jsonify(dados_cnpj)
-    # else:
-    #     return jsonify({'erro': 'CNPJ não encontrado.'})
+    # filtrar pelo cnpj no DataFrame, passar o cnpj que vem na requisição para esse que está fixo
+    dados_filtrados = dados_excel.query("CNPJ == '62.388.566/0001-90'")
+    
 
-    return cnpj_formatado
+
+    # if dados_filtrados.empty:
+    #     return jsonify({'erro': 'CNPJ não encontrado.'}), 404
+    
+    dados_json = dados_filtrados.to_json()
+
+    return dados_json
+
 app.run(host='0.0.0.0', debug=True)

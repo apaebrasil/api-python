@@ -20,15 +20,6 @@ def consultar_dados_cnpj(dados_excel, cnpj):
         return None
 
 def ler_arquivo_excel(arquivo_destino):
-    """
-    Lê o arquivo Excel e retorna os dados como um DataFrame.
-
-    Args:
-        arquivo_destino (str): Caminho para o arquivo Excel.
-
-    Returns:
-        pandas.DataFrame: DataFrame contendo os dados do Excel, ou None se o arquivo não for encontrado ou não puder ser lido.
-    """
     try:
         # Lê o arquivo Excel usando o Pandas
         dados_excel = pd.read_excel(arquivo_destino, skiprows=4)
@@ -38,16 +29,6 @@ def ler_arquivo_excel(arquivo_destino):
         return None
 
 def download_arquivo(url, destino):
-    """
-    Baixa um arquivo para o destino especificado, substituindo o arquivo existente se houver.
-
-    Args:
-        url (str): URL do arquivo.
-        destino (str): Caminho para o destino do arquivo.
-
-    Returns:
-        bool: True se o download foi bem-sucedido, False caso contrário.
-    """
     try:
         # Verifica se o arquivo já existe
         if os.path.exists(destino):
@@ -95,12 +76,10 @@ resposta_pagina = requests.get(url_pagina)
 if resposta_pagina.status_code == 200:
     # Parseia o conteúdo HTML da página
     soup = BeautifulSoup(resposta_pagina.content, 'html.parser')
-    # 
+
     # Tenta encontrar o elemento usando o seletor CSS do XPath
     elemento = soup.select_one("#parent-fieldname-text > p.callout > strong > a")
 
-    # Encontra o link do arquivo na página
-    # tag_arquivo = soup.find('a', href='https://www.gov.br/mds/pt-br/acoes-e-programas/suas/entidades-de-assistencia-social/copy2_of_PROCESSOSCEBAS15.04.2024Site.xls')
 
     if elemento:
         link_arquivo = elemento['href']
@@ -116,9 +95,16 @@ if resposta_pagina.status_code == 200:
         if os.path.exists(arquivo_destino):
             # Lê o arquivo Excel (opcional)
             dados_excel = pd.read_excel(arquivo_destino, skiprows=4)
-
+            
+            #formantando para csv
+            # dados_excel.to_csv('dados.csv', index=True)
+            
+            # filtrar pelo cpf no excel
             dados_cnpj = dados_excel.query("CNPJ == '24.862.252/0001-98'")
             print(dados_cnpj)
+            
+            # Converta o DataFrame para JSON
+            # dados_json = dados_excel.to_json(orient='records', indent=4)
 
             # cnpjs_para_consultar = ['62.388.566/0001-90', '03.380.445/0001-32', '30.412.616/0001-30']
             # dados_cnpjs = dados_excel[dados_excel['CNPJ'].isin(cnpjs_para_consultar)]
