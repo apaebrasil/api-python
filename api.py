@@ -3,7 +3,7 @@ import re
 import os
 from init import *
 import json
-
+import jsonpickle
 app = Flask(__name__)
 
 # arquivo_destino = os.path.join(diretorio_destino, nome_arquivo)
@@ -73,16 +73,11 @@ def cebas():
 
     # dados_excel.to_csv(index=True, encoding='utf-8', header=True, sep="\t", columns=colunas, index_col=0)
 
-    dados = dados_excel.to_csv(index=True, encoding='utf-8', header=True, columns=colunas)
-
-    response = Response(
-        response=json.dumps(dados),
-        status=200,
-        mimetype='application/json'
-    )
+    # dados = dados_excel.to_csv(index=True, encoding='utf-8', header=True, columns=colunas
 
     # jsonify(dados, mimetype='application/json')
-
-    return response
+    # dados_cnpj = dados_excel.query("CNPJ == '24.862.252/0001-98'")
+    # dados_excel.to_dict(orient='records')[0]
+    return dados_excel.to_json()
 
 app.run(host='0.0.0.0', debug=True)

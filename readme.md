@@ -18,3 +18,5 @@
 
     # cnpjs_para_consultar = ['62.388.566/0001-90', '03.380.445/0001-32', '30.412.616/0001-30']
     # dados_cnpjs = dados_excel[dados_excel['CNPJ'].isin(cnpjs_para_consultar)]
+
+    http://127.0.0.1:5000/api

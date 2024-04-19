@@ -112,7 +112,15 @@ if resposta_pagina.status_code == 200:
             'DT_INICIO_CERTIFICACAO_ATUAL', 'DT_FIM_CERTIFICACAO_ATUAL'
             ]
 
-            dados_excel = pd.read_excel(arquivo_destino, skiprows=4, usecols=colunas)
+            dados_excel = pd.read_excel(arquivo_destino, skiprows=4, usecols=colunas, na_filter=True)
+            
+            dados_excel.to_json(index=True, force_ascii=False)
+            # dados_excel = pd.to_csv('arquivo_csv.csv', index=False, encoding='utf-8', sep=',')
+            
+            
+            # dados_excel.to_json('arquivo_json.json', force_ascii=False)
+            # print(dados_excel)
+            
             # dados_excel.to_csv('tabela_formatada.csv', index=False)
 
             #print(dados_excel.head())
@@ -121,7 +129,7 @@ if resposta_pagina.status_code == 200:
 
             # filtrar pelo cpf no excel
             # dados_cnpj = dados_excel.query("CNPJ == '24.862.252/0001-98'")
-            print(dados_excel)
+            # print(dados_excel)
         else:
             print('Falha ao salvar o arquivo.')
     else:
