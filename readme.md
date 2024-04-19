@@ -9,6 +9,10 @@
 62.388.566/0001-90
 
 
+03380445000132
+03.380.445/0001-32
+
+
     # filtrar pelo cpf no excel
     # dados_cnpj = dados_excel.query("CNPJ == '24.862.252/0001-98'")
     print(dados_excel)

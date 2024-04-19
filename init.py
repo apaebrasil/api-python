@@ -93,9 +93,6 @@ if resposta_pagina.status_code == 200:
         # Baixa o arquivo se ainda não existir
         download_arquivo(link_arquivo, arquivo_destino)
         if os.path.exists(arquivo_destino):
-            # Lê o arquivo Excel (opcional)
-
-            # dados_excel.to_excel('newtabela', index=False, header=True)
 
             colunas = [
             'PROTOCOLO', 'ENTIDADE', 'CNPJ', 'MUNICIPIO', 'UF', 'DT_PROTOCOLO',
@@ -113,23 +110,12 @@ if resposta_pagina.status_code == 200:
             ]
 
             dados_excel = pd.read_excel(arquivo_destino, skiprows=4, usecols=colunas, na_filter=True)
-            
-            dados_excel.to_json(index=True, force_ascii=False)
-            # dados_excel = pd.to_csv('arquivo_csv.csv', index=False, encoding='utf-8', sep=',')
-            
-            
-            # dados_excel.to_json('arquivo_json.json', force_ascii=False)
-            # print(dados_excel)
-            
-            # dados_excel.to_csv('tabela_formatada.csv', index=False)
 
-            #print(dados_excel.head())
+            dados_excel.to_csv(arquivo_destino, index=False, encoding='utf-8', sep=',') 
+            
 
-            # dados_excel.to_csv('dados.csv', index=True, encoding='utf-8')
-
-            # filtrar pelo cpf no excel
             # dados_cnpj = dados_excel.query("CNPJ == '24.862.252/0001-98'")
-            # print(dados_excel)
+            # print(dados_cnpj)
         else:
             print('Falha ao salvar o arquivo.')
     else:
