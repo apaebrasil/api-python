@@ -3,30 +3,6 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
-def consultar_dados_cnpj(dados_excel, cnpj):
-    if dados_excel is not None:
-        # Filtra os dados pelo CNPJ informado
-        dados_cnpj = dados_excel[dados_excel['CNPJ'] == cnpj]
-
-        # Converte o DataFrame em um dicionário
-        if not dados_cnpj.empty:
-            dados_cnpj = dados_cnpj.to_dict(orient='records')[0]
-            return dados_cnpj
-        else:
-            print(f'CNPJ {cnpj} não encontrado.')
-            return None
-    else:
-        print('Dados do Excel não disponíveis.')
-        return None
-
-def ler_arquivo_excel(arquivo_destino):
-    try:
-        # Lê o arquivo Excel usando o Pandas
-        dados_excel = pd.read_excel(arquivo_destino, skiprows=4)
-        return dados_excel
-    except (FileNotFoundError, pd.errors.EmptyDataError) as e:
-        print(f'Erro ao ler o arquivo Excel: {e}')
-        return None
 
 def download_arquivo(url, destino):
     try:
@@ -34,7 +10,7 @@ def download_arquivo(url, destino):
         if os.path.exists(destino):
             # Deleta o arquivo existente
             print(f"Excluindo arquivo existente: {destino}")
-            os.remove(destino)
+            # os.remove(destino)
         # Baixa o arquivo
         resposta_arquivo = requests.get(url)
 
@@ -91,7 +67,8 @@ if resposta_pagina.status_code == 200:
         arquivo_destino = os.path.join(diretorio_destino, nome_arquivo)
 
         # Baixa o arquivo se ainda não existir
-        download_arquivo(link_arquivo, arquivo_destino)
+        # download_arquivo(link_arquivo, arquivo_destino)
+        
         if os.path.exists(arquivo_destino):
 
             colunas = [
@@ -109,13 +86,9 @@ if resposta_pagina.status_code == 200:
             'DT_INICIO_CERTIFICACAO_ATUAL', 'DT_FIM_CERTIFICACAO_ATUAL'
             ]
 
-            dados_excel = pd.read_excel(arquivo_destino, skiprows=4, usecols=colunas, na_filter=True)
+            dados_excel = pd.read_excel(arquivo_destino, skiprows=4, usecols=colunas)
 
-            dados_excel.to_csv(arquivo_destino, index=False, encoding='utf-8', sep=',') 
-            
-
-            # dados_cnpj = dados_excel.query("CNPJ == '24.862.252/0001-98'")
-            # print(dados_cnpj)
+            # dadosCsv = dados_excel.to_csv(arquivo_destino, index=False, encoding='utf-8', sep=',') 
         else:
             print('Falha ao salvar o arquivo.')
     else:
