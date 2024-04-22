@@ -3,56 +3,18 @@ import re
 from init import *
 import json
 from datetime import datetime
-
+# from dotenv import load_dotenv
+# load_dotenv()
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
-
-teste = ['03.380.445/0001-32', '62.388.566/0001-90']
+# app.config['API_KEY'] = os.getenv("APIKEY")
 
 def mascarar_cnpj(cnpj_desformatado):
     if not cnpj_desformatado:
         return None
-    # Remove caracteres não numéricos, exceto -, / e espaços
-    cnpj_sem_caracteres = re.sub(r"[^\d\-/\s]", "", cnpj_desformatado)
-    
-    #Remove apenas caracteres não numéricos
-    # cnpj_sem_caracteres = re.sub(r"[^\d]", "", cnpj_desformatado)
-
-    # Valida tamanho do CNPJ
-    if len(cnpj_sem_caracteres) != 14:
-        return f"CNPJ inválido: {cnpj_desformatado}"
-    
-    # Formata CNPJ com máscara
-    try:
-        # Preenche com zeros à esquerda caso necessário
-        cnpj_sem_caracteres = cnpj_sem_caracteres.zfill(14)
-        return f"{cnpj_sem_caracteres[:2]}.{cnpj_sem_caracteres[2:5]}.{cnpj_sem_caracteres[5:8]}/{cnpj_sem_caracteres[8:10]}-{cnpj_sem_caracteres[10:14]}"
-    except ValueError:
-        return f"CNPJ inválido: {cnpj_desformatado}"
-    
-def consultar_dados_cnpj(dados_excel, cnpj):
-    print('O CNPJ QUE VEIO FOI:', cnpj)
-    if dados_excel is not None:
-        # Filtra os dados pelo CNPJ informado
-        # dados_cnpj = dados_excel[dados_excel['CNPJ'] == cnpj]
-        
-        # dados_cnpj = dados_excel.query(f"CNPJ == '62.388.566/0001-90'")
-        
-        dados_cnpj = dados_excel.query(f"CNPJ == '{teste[1]}'")
-
-        # Converte o DataFrame em um dicionário
-        if not dados_cnpj.empty:
-            dados_cnpj = dados_cnpj.to_dict(orient='records')[0]
-            return dados_cnpj
-        else:
-            print(f'CNPJ {cnpj} não encontrado.')
-            return None
-    else:
-        print('Dados do Excel não disponíveis.')
-        return None
-
-
+    cnpj_formatado = re.sub(r'(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})', r'\1.\2.\3/\4-\5', cnpj_desformatado)
+    return cnpj_formatado
 
 @app.route('/')
 def homepage():
@@ -77,7 +39,27 @@ def cebas():
         status=200,
         mimetype='application/json'
     )
-    
     # return jsonify(timestamp_str)
     return response
-app.run(debug=True)
+
+def consultar_dados_cnpj(dados_excel, cnpj):
+    print('O CNPJ QUE VEIO FOI:', cnpj)
+    if dados_excel is not None:
+        # dados_cnpj = dados_excel.query(f"CNPJ == '62.388.566/0001-90'")
+        # 62.388.566/0001-90  62388566000190
+        # dados_cnpj = dados_excel[dados_excel['CNPJ'] == '59.573.030/0001-30']
+        dados_cnpj = dados_excel.query(f"CNPJ == '{cnpj}'")
+        print(dados_cnpj)
+        # Converte o DataFrame em um dicionário
+        
+        if not dados_cnpj.empty:
+            dados_cnpj = dados_cnpj.to_dict('index')
+            return dados_cnpj
+        else:
+            print(f'CNPJ {cnpj} não encontrado.')
+            return None
+    else:
+        print('Dados do Excel não disponíveis.')
+        return None
+
+app.run(host='0.0.0.0', debug=True, port=5000)
