@@ -49,4 +49,3 @@ Elastic
 docker build -t apiflaskcebas/python3.9 .
 docker images
 docker run -d -p 5000:5000 apiflaskcebas/python3.9
-

@@ -42,6 +42,26 @@ def cebas():
     # return jsonify(timestamp_str)
     return response
 
+
+@app.route('/api/cebas/all', methods=['GET'])
+def consultarTodosDados():
+    # dados_cnpj = dados_cnpj.to_dict('index')
+
+    dadosDescolunados = dados_excel
+
+    result = dadosDescolunados.to_dict('index')
+    timestamp_str = str(result)
+    
+
+    response = Response(
+        response=json.dumps(timestamp_str),
+        status=200,
+        mimetype='application/json'
+    )
+
+    return response
+
+
 def consultar_dados_cnpj(dados_excel, cnpj):
     print('O CNPJ QUE VEIO FOI:', cnpj)
     if dados_excel is not None:
@@ -63,4 +83,4 @@ def consultar_dados_cnpj(dados_excel, cnpj):
         return None
     
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int("5000"), debug=True)
+    app.run(host="0.0.0.0", port=int("5000"), debug=False)
