@@ -3,11 +3,14 @@ import re
 from init import *
 import json
 from datetime import datetime
+from flask_cors import CORS, cross_origin
 # from dotenv import load_dotenv
 # load_dotenv()
 
 app = Flask(__name__)
-app.config['JSON_AS_ASCII'] = False
+app.config['CORS_HEADERS'] = 'Content-Type'
+cors = CORS(app)
+
 # app.config['API_KEY'] = os.getenv("APIKEY")
 
 def mascarar_cnpj(cnpj_desformatado):
@@ -17,6 +20,7 @@ def mascarar_cnpj(cnpj_desformatado):
     return cnpj_formatado
 
 @app.route('/')
+@cross_origin()
 def homepage():
     return 'Homepage'
 
@@ -25,6 +29,7 @@ def api():
     return 'Page Api'
 
 @app.route('/api/cebas', methods=['GET'])
+@cross_origin()
 def cebas():
     cnpj_desformatado = request.args.get('cnpj')
     cnpj_formatado = mascarar_cnpj(cnpj_desformatado)
@@ -83,4 +88,4 @@ def consultar_dados_cnpj(dados_excel, cnpj):
         return None
     
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int("5000"), debug=False)
+    app.run(host="0.0.0.0", port=int("80"), debug=False)

@@ -2,7 +2,7 @@ FROM python:3
 COPY . /work
 WORKDIR /work
 
-EXPOSE 5000
+EXPOSE 80
 
 RUN pip install --no-cache-dir -r requirements.txt
 
