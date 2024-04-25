@@ -8,10 +8,11 @@ from flask_cors import CORS, cross_origin
 # load_dotenv()
 
 app = Flask(__name__)
+app.config['JSON_AS_ASCII'] = False
 app.config['CORS_HEADERS'] = 'Content-Type'
+# app.config['API_KEY'] = os.getenv("APIKEY")
 cors = CORS(app)
 
-# app.config['API_KEY'] = os.getenv("APIKEY")
 
 def mascarar_cnpj(cnpj_desformatado):
     if not cnpj_desformatado:
@@ -30,7 +31,7 @@ def api():
 
 @app.route('/api/cebas', methods=['GET'])
 @cross_origin()
-def cebas():
+def cebasCnpj():
     cnpj_desformatado = request.args.get('cnpj')
     cnpj_formatado = mascarar_cnpj(cnpj_desformatado)
     
@@ -45,18 +46,71 @@ def cebas():
         mimetype='application/json'
     )
     # return jsonify(timestamp_str)
-    return response
+    return json.dump(response)
 
 
 @app.route('/api/cebas/all', methods=['GET'])
+@cross_origin()
 def consultarTodosDados():
     # dados_cnpj = dados_cnpj.to_dict('index')
 
     dadosDescolunados = dados_excel
 
-    result = dadosDescolunados.to_dict('index')
+    result = dadosDescolunados.to_dict('records')
     timestamp_str = str(result)
     
+
+    response = Response(
+        response=json.dumps(timestamp_str),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
+
+# @app.route('/api/cebas/getcount', methods=['GET'])
+# @cross_origin()
+# def getCount():
+#     return response
+
+
+@app.route('/api/cebas/getlink', methods=['GET'])
+@cross_origin()
+def getLinkCebas():
+
+    data = {
+        "link": link_arquivo
+    }
+
+    return jsonify(data)
+
+
+#http://127.0.0.1/api/cebas/filtros?row_start=1&qtd_rows=5
+@app.route('/api/cebas/paginado', methods=['GET'])
+@cross_origin()
+def getCebasPaginada():
+
+    row_start = request.args.get('row_start')
+    qtd_rows = request.args.get('qtd_rows')
+
+    row_start_data = int(row_start)
+    qtd_rows_data = int(qtd_rows)
+
+    # dados_cnpj = dados_cnpj.to_dict('index')
+    
+    a = 'Timestamp'
+    b = 'nan'
+    c= 'NaT'
+    d="("
+    e=")"
+    f=" 00:00:00"
+
+    # dadosDescolunados = dados_excel.head(row_start_data).tail(6)
+
+    dadosDescolunados = dados_excel.iloc[row_start_data:row_start_data+qtd_rows_data]
+
+    result = dadosDescolunados.to_dict('records')
+    timestamp_str = str(result).replace(a,'').replace(b,"''").replace(c,"''").replace(d,'').replace(e,'').replace(f,'')
 
     response = Response(
         response=json.dumps(timestamp_str),
@@ -74,11 +128,9 @@ def consultar_dados_cnpj(dados_excel, cnpj):
         # 62.388.566/0001-90  62388566000190
         # dados_cnpj = dados_excel[dados_excel['CNPJ'] == '59.573.030/0001-30']
         dados_cnpj = dados_excel.query(f"CNPJ == '{cnpj}'")
-        print(dados_cnpj)
         # Converte o DataFrame em um dicionário
-        
         if not dados_cnpj.empty:
-            dados_cnpj = dados_cnpj.to_dict('index')
+            dados_cnpj = dados_cnpj.to_dict('records')
             return dados_cnpj
         else:
             print(f'CNPJ {cnpj} não encontrado.')
@@ -86,6 +138,6 @@ def consultar_dados_cnpj(dados_excel, cnpj):
     else:
         print('Dados do Excel não disponíveis.')
         return None
-    
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int("80"), debug=False)
+    app.run(host="0.0.0.0", port=int("80"), debug=True)
