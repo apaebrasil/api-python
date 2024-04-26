@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, Response
+from flask import Flask, jsonify, request, Response, render_template
 import re
 from init import *
 import json
@@ -7,12 +7,11 @@ from flask_cors import CORS, cross_origin
 # from dotenv import load_dotenv
 # load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='./')
 app.config['JSON_AS_ASCII'] = False
 app.config['CORS_HEADERS'] = 'Content-Type'
 # app.config['API_KEY'] = os.getenv("APIKEY")
 cors = CORS(app)
-
 
 def mascarar_cnpj(cnpj_desformatado):
     if not cnpj_desformatado:
@@ -25,9 +24,10 @@ def mascarar_cnpj(cnpj_desformatado):
 def homepage():
     return 'Homepage'
 
+
 @app.route('/api', methods=['GET'])
 def api():
-    return 'Page Api'
+    return render_template('index.html')
 
 @app.route('/api/cebas', methods=['GET'])
 @cross_origin()
@@ -59,7 +59,6 @@ def consultarTodosDados():
     result = dadosDescolunados.to_dict('records')
     timestamp_str = str(result)
     
-
     response = Response(
         response=json.dumps(timestamp_str),
         status=200,
@@ -68,11 +67,16 @@ def consultarTodosDados():
     return response
 
 
-# @app.route('/api/cebas/getcount', methods=['GET'])
-# @cross_origin()
-# def getCount():
-#     return response
+@app.route('/api/cebas/getcount', methods=['GET'])
+@cross_origin()
+def getCount():
+    dadosDescolunados = dados_excel
+    numero_linhas = dadosDescolunados.index.size
 
+    data = {
+        "total_lines": numero_linhas
+    }
+    return data
 
 @app.route('/api/cebas/getlink', methods=['GET'])
 @cross_origin()
@@ -83,7 +87,6 @@ def getLinkCebas():
     }
 
     return jsonify(data)
-
 
 #http://127.0.0.1/api/cebas/filtros?row_start=1&qtd_rows=5
 @app.route('/api/cebas/paginado', methods=['GET'])
@@ -119,7 +122,6 @@ def getCebasPaginada():
     )
 
     return response
-
 
 def consultar_dados_cnpj(dados_excel, cnpj):
     print('O CNPJ QUE VEIO FOI:', cnpj)

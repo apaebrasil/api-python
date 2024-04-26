@@ -67,6 +67,7 @@ if resposta_pagina.status_code == 200:
         arquivo_destino = os.path.join(diretorio_destino, nome_arquivo)
 
         # Baixa o arquivo se ainda não existir
+        # Verificar de quanto em quanto tempo o excel será baixado
         # download_arquivo(link_arquivo, arquivo_destino)
         
         if os.path.exists(arquivo_destino):

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+        html{
+            background-color: #add8e6;
+        }
+
+        .container{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>API CEBAS</h1>
+        <ul>
+            <li>[GET] <a href="/api/cebas">/api/cebas?cnpj=</a> <p> -> Retorna os Dados Buscando pelo CNPJ - Parâmetro (cnpj) ex: 62388566000190</p></li>
+            <li>[GET] <a href="api/cebas/getcount">api/cebas/getcount</a><p>-> Retorna a quantidade de linhas totais</p></li>
+            <li>[GET] <a href="/api/cebas/all">/api/cebas/all</a><p>-> Retorna todos os dados do cebas</p></li>
+            <li>[GET] <a href="/api/cebas/getlink">/api/cebas/getlink</a> <p>-> Retorna um link em formato Json para baixar a planilha do cebas atualizado</p></li>
+            <li>[GET] <a href="/api/cebas/paginado?row_start=1&qtd_rows=5">/api/cebas/paginado?row_start=1&qtd_rows=5</a> <p>-> Retorna os Dados Paginados - Parâmetros (row_start) (qtd_rows) </p></li>
+        </ul>
+    </div>
+</body>
+</html>
