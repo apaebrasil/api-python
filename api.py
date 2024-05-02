@@ -33,8 +33,7 @@ def api():
 @cross_origin()
 def cebasCnpj():
     cnpj_desformatado = request.args.get('cnpj')
-    cnpj_formatado = mascarar_cnpj(cnpj_desformatado)        
-    
+    cnpj_formatado = mascarar_cnpj(cnpj_desformatado)            
     result = consultar_dados_cnpj(dados_excel, cnpj_formatado)
     timestamp_str = str(result)
     
@@ -43,8 +42,9 @@ def cebasCnpj():
     c= 'NaT'
     d="("
     e=")"
-    f=" 00:00:00"    
-    timestamp_str = str(result).replace(a,'').replace(b,"''").replace(c,"''").replace(d,'').replace(e,'').replace(f,'')
+    f=" 00:00:00"
+    g='\"' 
+    timestamp_str = str(result).replace(a,'').replace(b,"''").replace(c,"''").replace(d,'').replace(e,'').replace(f,'').replace(g,'')
     
     response = Response(
         response=json.dumps(timestamp_str, ensure_ascii=False).encode('utf8'),
@@ -99,25 +99,33 @@ def getCebasPaginada():
 
     row_start = request.args.get('row_start')
     qtd_rows = request.args.get('qtd_rows')
+    status = str(request.args.get('status'))
+    dt_inicio = str(request.args.get('dt_inicio'))
+    dt_fim = str(request.args.get('dt_fim'))
+    
 
     row_start_data = int(row_start)
     qtd_rows_data = int(qtd_rows)
-
-    # dados_cnpj = dados_cnpj.to_dict('index')
-    
+        
     a = 'Timestamp'
     b = 'nan'
     c= 'NaT'
     d="("
     e=")"
     f=" 00:00:00"
+    g='\"'
+    
+        
+    dados= dados_excel.query(f"DT_FIM_CERTIFICACAO_ATUAL >= '{dt_inicio}'")
+    dados= dados.query(f"DT_FIM_CERTIFICACAO_ATUAL <= '{dt_fim}'")
+            
+    dados = dados.iloc[row_start_data:row_start_data+qtd_rows_data]    
+    
+    if(status != "None" and status != ""):
+        dados= dados.query(f"FASE_PROCESSO == '{status}'")                        
 
-    # dadosDescolunados = dados_excel.head(row_start_data).tail(6)
-
-    dadosDescolunados = dados_excel.iloc[row_start_data:row_start_data+qtd_rows_data]
-
-    result = dadosDescolunados.to_dict('records')
-    timestamp_str = str(result).replace(a,'').replace(b,"''").replace(c,"''").replace(d,'').replace(e,'').replace(f,'')
+    result = dados.to_dict('records')
+    timestamp_str = str(result).replace(a,'').replace(b,"''").replace(c,"''").replace(d,'').replace(e,'').replace(f,'').replace(g, '')
 
     response = Response(
         response=json.dumps(timestamp_str),
