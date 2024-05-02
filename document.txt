@@ -1,0 +1,3 @@
+1 - Verificar formato Json enviando errado.
+2 - Filtro por data
+3 - Filtro por status

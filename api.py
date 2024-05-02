@@ -33,12 +33,18 @@ def api():
 @cross_origin()
 def cebasCnpj():
     cnpj_desformatado = request.args.get('cnpj')
-    cnpj_formatado = mascarar_cnpj(cnpj_desformatado)
-    
-    print(cnpj_desformatado, cnpj_formatado)
+    cnpj_formatado = mascarar_cnpj(cnpj_desformatado)        
     
     result = consultar_dados_cnpj(dados_excel, cnpj_formatado)
     timestamp_str = str(result)
+    
+    a = 'Timestamp'
+    b = 'nan'
+    c= 'NaT'
+    d="("
+    e=")"
+    f=" 00:00:00"    
+    timestamp_str = str(result).replace(a,'').replace(b,"''").replace(c,"''").replace(d,'').replace(e,'').replace(f,'')
     
     response = Response(
         response=json.dumps(timestamp_str, ensure_ascii=False).encode('utf8'),
@@ -46,7 +52,7 @@ def cebasCnpj():
         mimetype='application/json'
     )
     # return jsonify(timestamp_str)
-    return json.dump(response)
+    return response
 
 
 @app.route('/api/cebas/all', methods=['GET'])
@@ -65,7 +71,6 @@ def consultarTodosDados():
         mimetype='application/json'
     )
     return response
-
 
 @app.route('/api/cebas/getcount', methods=['GET'])
 @cross_origin()
@@ -88,7 +93,6 @@ def getLinkCebas():
 
     return jsonify(data)
 
-#http://127.0.0.1/api/cebas/filtros?row_start=1&qtd_rows=5
 @app.route('/api/cebas/paginado', methods=['GET'])
 @cross_origin()
 def getCebasPaginada():
