@@ -46,6 +46,8 @@ def cebasCnpj():
     g='\"' 
     timestamp_str = str(result).replace(a,'').replace(b,"''").replace(c,"''").replace(d,'').replace(e,'').replace(f,'').replace(g,'')
     
+                
+    
     response = Response(
         response=json.dumps(timestamp_str, ensure_ascii=False).encode('utf8'),
         status=200,
@@ -114,7 +116,6 @@ def getCebasPaginada():
     e=")"
     f=" 00:00:00"
     g='\"'
-    
         
     dados= dados_excel.query(f"DT_FIM_CERTIFICACAO_ATUAL >= '{dt_inicio}'")
     dados= dados.query(f"DT_FIM_CERTIFICACAO_ATUAL <= '{dt_fim}'")
@@ -125,10 +126,24 @@ def getCebasPaginada():
         dados= dados.query(f"FASE_PROCESSO == '{status}'")                        
 
     result = dados.to_dict('records')
-    timestamp_str = str(result).replace(a,'').replace(b,"''").replace(c,"''").replace(d,'').replace(e,'').replace(f,'').replace(g, '')
+    formatted_data = []
+    for row in dados.to_dict('records'):
+        print(row)
+        row['DT_PROTOCOLO'] =  formatar_se_valido(row['DT_PROTOCOLO'])
+        row['DT_INICIO_CERTIFICACAO_ATUAL'] =  formatar_se_valido(row['DT_CERTIFICACAO_ANTERIOR_INICIO'])
+        row['DT_CERTIFICACAO_ANTERIOR_FIM'] =  formatar_se_valido(row['DT_CERTIFICACAO_ANTERIOR_INICIO'])
+        row['DT_FIM_CERTIFICACAO_ATUAL'] =  formatar_se_valido(row['DT_CERTIFICACAO_ANTERIOR_FIM'])        
+        row['DT_CERTIFICACAO_ANTERIOR_INICIO'] =  formatar_se_valido(row['DT_CERTIFICACAO_ANTERIOR_INICIO'])
+        row['DT_DECISAO_SNAS'] =  formatar_se_valido(row['DT_DECISAO_SNAS'])
+        # row['DT_PROTOCOLO_RECURSO_SNAS'] =  formatar_se_valido(row['DT_PROTOCOLO_RECURSO_SNAS'])
+        row['DT_PUBICACAO_PORTARIA_SNAS_DOU'] =  formatar_se_valido(row['DT_PUBICACAO_PORTARIA_SNAS_DOU'])
+        print(row)
+        
+        formatted_data.append(row)
+    # timestamp_str = str(result).replace(a,'').replace(b,"''").replace(c,"''").replace(d,'').replace(e,'').replace(f,'').replace(g, '').replace("'O","O")
 
     response = Response(
-        response=json.dumps(timestamp_str),
+        response=json.dumps(formatted_data),
         status=200,
         mimetype='application/json'
     )
@@ -152,6 +167,14 @@ def consultar_dados_cnpj(dados_excel, cnpj):
     else:
         print('Dados do Excel não disponíveis.')
         return None
-
+    
+def formatar_se_valido(timestamp):
+    print(timestamp)
+    print(not pd.isna(timestamp) and not isinstance(timestamp, str))
+    if not pd.isna(timestamp) and not isinstance(timestamp, str):  # Verifica se não é ausente
+        return timestamp.strftime('%Y-%m-%d')  # Formatar se válido
+    else:
+        return "" 
+    
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int("80"), debug=True)
+    app.run(host="0.0.0.0", port=int("80"), debug=False)
