@@ -40,9 +40,9 @@ def cebasCnpj():
     formatted_data = []
     for row in dados.to_dict("records"):
         row['DT_PROTOCOLO'] =  formatar_se_valido(row['DT_PROTOCOLO'])
-        row['DT_INICIO_CERTIFICACAO_ATUAL'] =  formatar_se_valido(row['DT_CERTIFICACAO_ANTERIOR_INICIO'])
-        row['DT_CERTIFICACAO_ANTERIOR_FIM'] =  formatar_se_valido(row['DT_CERTIFICACAO_ANTERIOR_INICIO'])
-        row['DT_FIM_CERTIFICACAO_ATUAL'] =  formatar_se_valido(row['DT_CERTIFICACAO_ANTERIOR_FIM'])        
+        row['DT_INICIO_CERTIFICACAO_ATUAL'] =  formatar_se_valido(row['DT_INICIO_CERTIFICACAO_ATUAL'])
+        row['DT_CERTIFICACAO_ANTERIOR_FIM'] =  formatar_se_valido(row['DT_CERTIFICACAO_ANTERIOR_FIM'])
+        row['DT_FIM_CERTIFICACAO_ATUAL'] =  formatar_se_valido(row['DT_FIM_CERTIFICACAO_ATUAL'])        
         row['DT_CERTIFICACAO_ANTERIOR_INICIO'] =  formatar_se_valido(row['DT_CERTIFICACAO_ANTERIOR_INICIO'])
         row['DT_DECISAO_SNAS'] =  formatar_se_valido(row['DT_DECISAO_SNAS'])
         row['DT_PUBICACAO_PORTARIA_SNAS_DOU'] =  formatar_se_valido(row['DT_PUBICACAO_PORTARIA_SNAS_DOU'])
@@ -118,9 +118,9 @@ def getCebasPaginada():
     formatted_data = []
     for row in dados.to_dict('records'):
         row['DT_PROTOCOLO'] =  formatar_se_valido(row['DT_PROTOCOLO'])
-        row['DT_INICIO_CERTIFICACAO_ATUAL'] =  formatar_se_valido(row['DT_CERTIFICACAO_ANTERIOR_INICIO'])
+        row['DT_INICIO_CERTIFICACAO_ATUAL'] =  formatar_se_valido(row['DT_INICIO_CERTIFICACAO_ATUAL'])
         row['DT_CERTIFICACAO_ANTERIOR_FIM'] =  formatar_se_valido(row['DT_CERTIFICACAO_ANTERIOR_INICIO'])
-        row['DT_FIM_CERTIFICACAO_ATUAL'] =  formatar_se_valido(row['DT_CERTIFICACAO_ANTERIOR_FIM'])        
+        row['DT_FIM_CERTIFICACAO_ATUAL'] =  formatar_se_valido(row['DT_FIM_CERTIFICACAO_ATUAL'])        
         row['DT_CERTIFICACAO_ANTERIOR_INICIO'] =  formatar_se_valido(row['DT_CERTIFICACAO_ANTERIOR_INICIO'])
         row['DT_DECISAO_SNAS'] =  formatar_se_valido(row['DT_DECISAO_SNAS'])
         row['DT_PUBICACAO_PORTARIA_SNAS_DOU'] =  formatar_se_valido(row['DT_PUBICACAO_PORTARIA_SNAS_DOU'])
@@ -137,6 +137,7 @@ def getCebasPaginada():
     return response
 
 def formatar_se_valido(timestamp):
+    print(type(timestamp))
     if not pd.isna(timestamp) and not isinstance(timestamp, str):  # Verifica se não é ausente
         return timestamp.strftime('%Y-%m-%d')  # Formatar se válido
     else:
