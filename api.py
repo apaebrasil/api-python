@@ -16,7 +16,7 @@ cors = CORS(app)
 def mascarar_cnpj(cnpj_desformatado):
     if not cnpj_desformatado:
         return None
-    cnpj_formatado = re.sub(r'(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})', r'\1.\2.\3/\4-\5', cnpj_desformatado)
+    cnpj_formatado = re.sub(r'(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})', r'\1.\2.\3/\4-\5', cnpj_desformatado)    
     return cnpj_formatado
 
 @app.route('/')
@@ -33,10 +33,12 @@ def api():
 @cross_origin()
 def cebasCnpj():
     cnpj_desformatado = request.args.get('cnpj')
-    cnpj_formatado = mascarar_cnpj(cnpj_desformatado)            
-    result = consultar_dados_cnpj(dados_excel, cnpj_formatado)    
+    cnpj_formatado = mascarar_cnpj(cnpj_desformatado)          
+    
+    dados = dados_excel.query(f"CNPJ == '{cnpj_formatado}'")
+    
     formatted_data = []
-    for row in result:
+    for row in dados.to_dict("records"):
         row['DT_PROTOCOLO'] =  formatar_se_valido(row['DT_PROTOCOLO'])
         row['DT_INICIO_CERTIFICACAO_ATUAL'] =  formatar_se_valido(row['DT_CERTIFICACAO_ANTERIOR_INICIO'])
         row['DT_CERTIFICACAO_ANTERIOR_FIM'] =  formatar_se_valido(row['DT_CERTIFICACAO_ANTERIOR_INICIO'])
@@ -134,24 +136,6 @@ def getCebasPaginada():
 
     return response
 
-def consultar_dados_cnpj(dados_excel, cnpj):
-    print('O CNPJ QUE VEIO FOI:', cnpj)
-    if dados_excel is not None:
-        # dados_cnpj = dados_excel.query(f"CNPJ == '62.388.566/0001-90'")
-        # 62.388.566/0001-90  62388566000190
-        # dados_cnpj = dados_excel[dados_excel['CNPJ'] == '59.573.030/0001-30']
-        dados_cnpj = dados_excel.query(f"CNPJ == '{cnpj}'")
-        # Converte o DataFrame em um dicionário
-        if not dados_cnpj.empty:
-            dados_cnpj = dados_cnpj.to_dict('records')
-            return dados_cnpj
-        else:
-            print(f'CNPJ {cnpj} não encontrado.')
-            return None
-    else:
-        print('Dados do Excel não disponíveis.')
-        return None
-    
 def formatar_se_valido(timestamp):
     if not pd.isna(timestamp) and not isinstance(timestamp, str):  # Verifica se não é ausente
         return timestamp.strftime('%Y-%m-%d')  # Formatar se válido
@@ -159,4 +143,4 @@ def formatar_se_valido(timestamp):
         return "" 
     
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int("80"), debug=True)
+    app.run(host="0.0.0.0", port=int("80"), debug=False)
